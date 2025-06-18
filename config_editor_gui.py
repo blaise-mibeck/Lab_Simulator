@@ -4,6 +4,7 @@ import yaml
 import os
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import csv
 
 class ConfigEditorGUI:
     def __init__(self, root):
@@ -80,16 +81,20 @@ class ConfigEditorGUI:
         self.instr_details.pack(side='left', fill='both', expand=True)
 
     def create_workflow_tab(self):
-        self.wf_listbox = tk.Listbox(self.workflow_tab)
-        self.wf_listbox.pack(side='left', fill='y')
-        self.wf_listbox.bind('<<ListboxSelect>>', self.on_wf_select)
-        btn_frame = tk.Frame(self.workflow_tab)
+        frame = tk.Frame(self.workflow_tab)
+        frame.pack(fill='both', expand=True)
+        self.wf_table = ttk.Treeview(frame, columns=(
+            'Step Name', 'Previous Task', 'Dependencies', 'Next Task', 'Task Type', 'Time (min)', 'Tool/Instrument', 'Attended', 'Batch?', 'Max Batch Size'), show='headings')
+        for col in self.wf_table['columns']:
+            self.wf_table.heading(col, text=col)
+            self.wf_table.column(col, width=100)
+        self.wf_table.pack(side='left', fill='both', expand=True)
+        btn_frame = tk.Frame(frame)
         btn_frame.pack(side='left', fill='y')
-        tk.Button(btn_frame, text='Add', command=self.add_workflow_step).pack(fill='x')
-        tk.Button(btn_frame, text='Edit', command=self.edit_workflow_step).pack(fill='x')
-        tk.Button(btn_frame, text='Delete', command=self.delete_workflow_step).pack(fill='x')
-        self.wf_details = tk.Text(self.workflow_tab, width=60)
-        self.wf_details.pack(side='left', fill='both', expand=True)
+        tk.Button(btn_frame, text='Import CSV', command=self.import_workflow_csv).pack(fill='x')
+        tk.Button(btn_frame, text='Export CSV', command=self.export_workflow_csv).pack(fill='x')
+        tk.Button(btn_frame, text='Add Row', command=self.add_workflow_row).pack(fill='x')
+        tk.Button(btn_frame, text='Delete Row', command=self.delete_workflow_row).pack(fill='x')
 
     def create_simulation_tab(self):
         frame = tk.Frame(self.simulation_tab)
@@ -133,9 +138,20 @@ class ConfigEditorGUI:
         for k in (self.config.get('instruments') or {}):
             self.instr_listbox.insert(tk.END, k)
         self.instr_details.delete('1.0', tk.END)
-        self.wf_listbox.delete(0, tk.END)
-        for k in (self.config.get('workflow_steps') or {}):
-            self.wf_listbox.insert(tk.END, k)
+        self.wf_table.delete(*self.wf_table.get_children())
+        for k, wf in (self.config.get('workflow_steps') or {}).items():
+            self.wf_table.insert('', 'end', values=[
+                wf.get('name', ''),
+                wf.get('previous_task', ''),
+                ', '.join(wf.get('dependencies', [])),
+                wf.get('next_task', ''),
+                wf.get('task_type', ''),
+                wf.get('time_min', ''),
+                wf.get('tool_instrument', ''),
+                wf.get('attended', ''),
+                wf.get('batch', ''),
+                wf.get('max_batch_size', '')
+            ])
         self.wf_details.delete('1.0', tk.END)
 
     def on_eq_select(self, event):
@@ -166,13 +182,13 @@ class ConfigEditorGUI:
         self.instr_details.insert(tk.END, yaml.dump(instr, sort_keys=False, allow_unicode=True))
 
     def on_wf_select(self, event):
-        sel = self.wf_listbox.curselection()
+        sel = self.wf_table.selection()
         if not sel:
             return
-        key = self.wf_listbox.get(sel[0])
-        wf = self.config.get('workflow_steps', {}).get(key, {})
+        row_id = sel[0]
+        wf = self.wf_table.item(row_id)['values']
         self.wf_details.delete('1.0', tk.END)
-        self.wf_details.insert(tk.END, yaml.dump(wf, sort_keys=False, allow_unicode=True))
+        self.wf_details.insert(tk.END, yaml.dump(dict(zip(self.wf_table['columns'], wf)), sort_keys=False, allow_unicode=True))
 
     def add_equipment(self):
         key = simpledialog.askstring('Add Equipment', 'Equipment key (unique):')
@@ -271,271 +287,48 @@ class ConfigEditorGUI:
             self.refresh_lists()
 
     def edit_workflow_step(self):
-        sel = self.wf_listbox.curselection()
+        sel = self.wf_table.selection()
         if not sel:
             return
-        key = self.wf_listbox.get(sel[0])
-        wf = self.config.get('workflow_steps', {}).get(key, {})
-        new_wf = self.edit_workflow_dialog(wf)
+        row_id = sel[0]
+        wf = self.wf_table.item(row_id)['values']
+        new_wf = self.edit_workflow_dialog(dict(zip(self.wf_table['columns'], wf)))
         if new_wf:
-            self.config['workflow_steps'][key] = new_wf
+            self.config['workflow_steps'][new_wf['name']] = new_wf
             self.refresh_lists()
 
     def delete_workflow_step(self):
-        sel = self.wf_listbox.curselection()
-        if not sel:
-            return
-        key = self.wf_listbox.get(sel[0])
-        if messagebox.askyesno('Delete', f'Delete workflow step {key}?'):
-            del self.config['workflow_steps'][key]
-            self.refresh_lists()
+        sel = self.wf_table.selection()
+        for row_id in sel:
+            self.wf_table.delete(row_id)
 
-    def create_equipment_tab(self):
-        self.eq_listbox = tk.Listbox(self.equipment_tab)
-        self.eq_listbox.pack(side='left', fill='y')
-        self.eq_listbox.bind('<<ListboxSelect>>', self.on_eq_select)
-        btn_frame = tk.Frame(self.equipment_tab)
-        btn_frame.pack(side='left', fill='y')
-        tk.Button(btn_frame, text='Add', command=self.add_equipment).pack(fill='x')
-        tk.Button(btn_frame, text='Edit', command=self.edit_equipment).pack(fill='x')
-        tk.Button(btn_frame, text='Delete', command=self.delete_equipment).pack(fill='x')
-        self.eq_details = tk.Text(self.equipment_tab, width=60)
-        self.eq_details.pack(side='left', fill='both', expand=True)
-
-    def create_staff_tab(self):
-        self.staff_listbox = tk.Listbox(self.staff_tab)
-        self.staff_listbox.pack(side='left', fill='y')
-        self.staff_listbox.bind('<<ListboxSelect>>', self.on_staff_select)
-        btn_frame = tk.Frame(self.staff_tab)
-        btn_frame.pack(side='left', fill='y')
-        tk.Button(btn_frame, text='Add', command=self.add_staff).pack(fill='x')
-        tk.Button(btn_frame, text='Edit', command=self.edit_staff).pack(fill='x')
-        tk.Button(btn_frame, text='Delete', command=self.delete_staff).pack(fill='x')
-        self.staff_details = tk.Text(self.staff_tab, width=60)
-        self.staff_details.pack(side='left', fill='both', expand=True)
-
-    def create_instruments_tab(self):
-        self.instr_listbox = tk.Listbox(self.instruments_tab)
-        self.instr_listbox.pack(side='left', fill='y')
-        self.instr_listbox.bind('<<ListboxSelect>>', self.on_instr_select)
-        btn_frame = tk.Frame(self.instruments_tab)
-        btn_frame.pack(side='left', fill='y')
-        tk.Button(btn_frame, text='Add', command=self.add_instrument).pack(fill='x')
-        tk.Button(btn_frame, text='Edit', command=self.edit_instrument).pack(fill='x')
-        tk.Button(btn_frame, text='Delete', command=self.delete_instrument).pack(fill='x')
-        self.instr_details = tk.Text(self.instruments_tab, width=60)
-        self.instr_details.pack(side='left', fill='both', expand=True)
-
-    def create_workflow_tab(self):
-        self.wf_listbox = tk.Listbox(self.workflow_tab)
-        self.wf_listbox.pack(side='left', fill='y')
-        self.wf_listbox.bind('<<ListboxSelect>>', self.on_wf_select)
-        btn_frame = tk.Frame(self.workflow_tab)
-        btn_frame.pack(side='left', fill='y')
-        tk.Button(btn_frame, text='Add', command=self.add_workflow_step).pack(fill='x')
-        tk.Button(btn_frame, text='Edit', command=self.edit_workflow_step).pack(fill='x')
-        tk.Button(btn_frame, text='Delete', command=self.delete_workflow_step).pack(fill='x')
-        self.wf_details = tk.Text(self.workflow_tab, width=60)
-        self.wf_details.pack(side='left', fill='both', expand=True)
-
-    def create_simulation_tab(self):
-        frame = tk.Frame(self.simulation_tab)
-        frame.pack(fill='both', expand=True)
-        tk.Label(frame, text='Number of Samples:').grid(row=0, column=0)
-        self.sim_samples = tk.Entry(frame)
-        self.sim_samples.insert(0, '10')
-        self.sim_samples.grid(row=0, column=1)
-        tk.Button(frame, text='Run Simulation', command=self.run_simulation).grid(row=1, column=0, columnspan=2)
-        self.sim_canvas = None
-
-    def open_file(self):
-        path = filedialog.askopenfilename(filetypes=[('YAML files', '*.txt *.yaml *.yml')])
+    def import_workflow_csv(self):
+        path = filedialog.askopenfilename(filetypes=[('CSV files', '*.csv')])
         if not path:
             return
-        with open(path, 'r', encoding='utf-8') as f:
-            self.config = yaml.safe_load(f) or {}
-        self.file_path = path
-        self.refresh_lists()
-        messagebox.showinfo('Config Editor', f'Loaded {path}')
+        with open(path, newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            self.wf_table.delete(*self.wf_table.get_children())
+            for row in reader:
+                self.wf_table.insert('', 'end', values=[row[col] for col in self.wf_table['columns']])
 
-    def save_file(self):
-        if not self.file_path:
-            self.file_path = filedialog.asksaveasfilename(defaultextension='.txt', filetypes=[('YAML files', '*.txt *.yaml *.yml')])
-        if not self.file_path:
+    def export_workflow_csv(self):
+        path = filedialog.asksaveasfilename(defaultextension='.csv', filetypes=[('CSV files', '*.csv')])
+        if not path:
             return
-        with open(self.file_path, 'w', encoding='utf-8') as f:
-            yaml.dump(self.config, f, sort_keys=False, allow_unicode=True)
-        messagebox.showinfo('Config Editor', f'Saved {self.file_path}')
+        with open(path, 'w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(self.wf_table['columns'])
+            for row_id in self.wf_table.get_children():
+                writer.writerow(self.wf_table.item(row_id)['values'])
 
-    def refresh_lists(self):
-        self.eq_listbox.delete(0, tk.END)
-        for k in (self.config.get('equipment') or {}):
-            self.eq_listbox.insert(tk.END, k)
-        self.eq_details.delete('1.0', tk.END)
-        self.staff_listbox.delete(0, tk.END)
-        for k in (self.config.get('staff') or {}):
-            self.staff_listbox.insert(tk.END, k)
-        self.staff_details.delete('1.0', tk.END)
-        self.instr_listbox.delete(0, tk.END)
-        for k in (self.config.get('instruments') or {}):
-            self.instr_listbox.insert(tk.END, k)
-        self.instr_details.delete('1.0', tk.END)
-        self.wf_listbox.delete(0, tk.END)
-        for k in (self.config.get('workflow_steps') or {}):
-            self.wf_listbox.insert(tk.END, k)
-        self.wf_details.delete('1.0', tk.END)
+    def add_workflow_row(self):
+        self.wf_table.insert('', 'end', values=['']*len(self.wf_table['columns']))
 
-    def on_eq_select(self, event):
-        sel = self.eq_listbox.curselection()
-        if not sel:
-            return
-        key = self.eq_listbox.get(sel[0])
-        eq = self.config.get('equipment', {}).get(key, {})
-        self.eq_details.delete('1.0', tk.END)
-        self.eq_details.insert(tk.END, yaml.dump(eq, sort_keys=False, allow_unicode=True))
-
-    def on_staff_select(self, event):
-        sel = self.staff_listbox.curselection()
-        if not sel:
-            return
-        key = self.staff_listbox.get(sel[0])
-        st = self.config.get('staff', {}).get(key, {})
-        self.staff_details.delete('1.0', tk.END)
-        self.staff_details.insert(tk.END, yaml.dump(st, sort_keys=False, allow_unicode=True))
-
-    def on_instr_select(self, event):
-        sel = self.instr_listbox.curselection()
-        if not sel:
-            return
-        key = self.instr_listbox.get(sel[0])
-        instr = self.config.get('instruments', {}).get(key, {})
-        self.instr_details.delete('1.0', tk.END)
-        self.instr_details.insert(tk.END, yaml.dump(instr, sort_keys=False, allow_unicode=True))
-
-    def on_wf_select(self, event):
-        sel = self.wf_listbox.curselection()
-        if not sel:
-            return
-        key = self.wf_listbox.get(sel[0])
-        wf = self.config.get('workflow_steps', {}).get(key, {})
-        self.wf_details.delete('1.0', tk.END)
-        self.wf_details.insert(tk.END, yaml.dump(wf, sort_keys=False, allow_unicode=True))
-
-    def add_equipment(self):
-        key = simpledialog.askstring('Add Equipment', 'Equipment key (unique):')
-        if not key:
-            return
-        eq = self.edit_equipment_dialog({})
-        if eq:
-            self.config.setdefault('equipment', {})[key] = eq
-            self.refresh_lists()
-
-    def edit_equipment(self):
-        sel = self.eq_listbox.curselection()
-        if not sel:
-            return
-        key = self.eq_listbox.get(sel[0])
-        eq = self.config.get('equipment', {}).get(key, {})
-        new_eq = self.edit_equipment_dialog(eq)
-        if new_eq:
-            self.config['equipment'][key] = new_eq
-            self.refresh_lists()
-
-    def delete_equipment(self):
-        sel = self.eq_listbox.curselection()
-        if not sel:
-            return
-        key = self.eq_listbox.get(sel[0])
-        if messagebox.askyesno('Delete', f'Delete equipment {key}?'):
-            del self.config['equipment'][key]
-            self.refresh_lists()
-
-    def add_staff(self):
-        key = simpledialog.askstring('Add Staff', 'Staff key (unique):')
-        if not key:
-            return
-        st = self.edit_staff_dialog({})
-        if st:
-            self.config.setdefault('staff', {})[key] = st
-            self.refresh_lists()
-
-    def edit_staff(self):
-        sel = self.staff_listbox.curselection()
-        if not sel:
-            return
-        key = self.staff_listbox.get(sel[0])
-        st = self.config.get('staff', {}).get(key, {})
-        new_st = self.edit_staff_dialog(st)
-        if new_st:
-            self.config['staff'][key] = new_st
-            self.refresh_lists()
-
-    def delete_staff(self):
-        sel = self.staff_listbox.curselection()
-        if not sel:
-            return
-        key = self.staff_listbox.get(sel[0])
-        if messagebox.askyesno('Delete', f'Delete staff {key}?'):
-            del self.config['staff'][key]
-            self.refresh_lists()
-
-    def add_instrument(self):
-        key = simpledialog.askstring('Add Instrument', 'Instrument key (unique):')
-        if not key:
-            return
-        instr = self.edit_instrument_dialog({})
-        if instr:
-            self.config.setdefault('instruments', {})[key] = instr
-            self.refresh_lists()
-
-    def edit_instrument(self):
-        sel = self.instr_listbox.curselection()
-        if not sel:
-            return
-        key = self.instr_listbox.get(sel[0])
-        instr = self.config.get('instruments', {}).get(key, {})
-        new_instr = self.edit_instrument_dialog(instr)
-        if new_instr:
-            self.config['instruments'][key] = new_instr
-            self.refresh_lists()
-
-    def delete_instrument(self):
-        sel = self.instr_listbox.curselection()
-        if not sel:
-            return
-        key = self.instr_listbox.get(sel[0])
-        if messagebox.askyesno('Delete', f'Delete instrument {key}?'):
-            del self.config['instruments'][key]
-            self.refresh_lists()
-
-    def add_workflow_step(self):
-        key = simpledialog.askstring('Add Workflow Step', 'Step key (unique):')
-        if not key:
-            return
-        wf = self.edit_workflow_dialog({})
-        if wf:
-            self.config.setdefault('workflow_steps', {})[key] = wf
-            self.refresh_lists()
-
-    def edit_workflow_step(self):
-        sel = self.wf_listbox.curselection()
-        if not sel:
-            return
-        key = self.wf_listbox.get(sel[0])
-        wf = self.config.get('workflow_steps', {}).get(key, {})
-        new_wf = self.edit_workflow_dialog(wf)
-        if new_wf:
-            self.config['workflow_steps'][key] = new_wf
-            self.refresh_lists()
-
-    def delete_workflow_step(self):
-        sel = self.wf_listbox.curselection()
-        if not sel:
-            return
-        key = self.wf_listbox.get(sel[0])
-        if messagebox.askyesno('Delete', f'Delete workflow step {key}?'):
-            del self.config['workflow_steps'][key]
-            self.refresh_lists()
+    def delete_workflow_row(self):
+        sel = self.wf_table.selection()
+        for row_id in sel:
+            self.wf_table.delete(row_id)
 
     def edit_equipment_dialog(self, eq):
         d = tk.Toplevel(self.root)

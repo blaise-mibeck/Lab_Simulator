@@ -53,4 +53,11 @@ metrics.json
 # Ignore any local config overrides
 config.local.*
 
+# Ignore old/deprecated files
+OLD/
+
+# Ignore example and config files not needed for production
+rock_analysis_configs.txt
+example_workflow.csv
+
 # Ignore any files you don't want in version control
