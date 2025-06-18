@@ -1,0 +1,687 @@
+lab_config:
+  name: Rock Analysis Laboratory
+  type: internal
+  location: Building A, Floor 2
+  operating_hours:
+    start: 08:00
+    end: '17:00'
+    days_per_week: 5
+  environment:
+    temperature:
+      min: 20
+      max: 25
+    humidity:
+      min: 30
+      max: 60
+equipment:
+  rock_saw:
+    name: Rock Cutting Saw
+    make: Hillquist
+    model: Model 1000
+    year: 2015
+    serial_number: HQ-1000-2015-001
+    mounting_type: floor
+    location: Sample Prep Room
+    setup_time:
+      min: 10
+      most_likely: 15
+      max: 20
+    sample_run_time:
+      min: 15
+      most_likely: 20
+      max: 30
+    cleanup_time:
+      min: 5
+      most_likely: 8
+      max: 12
+    shutdown_time:
+      min: 5
+      most_likely: 5
+      max: 10
+    automation_level: manual
+    sample_handling_type: individual
+    data_output_type: none
+    requires_supervision: true
+    capacity: 1
+    max_samples_before_maintenance: 200
+    maintenance_duration_hours: 4
+    calibration_frequency_days: null
+    required_operator_skill: sample_preparation
+    operator_skill_level: basic
+    consumables_per_sample:
+      cutting_fluid: 0.1
+      saw_blade_wear: 0.001
+    mtbf_hours: 200
+    mttr_hours: 2
+  micronizer_1:
+    name: 'Micronizing Mill #1'
+    make: McCrone
+    model: Micronising Mill
+    year: 2018
+    serial_number: MC-2018-001
+    mounting_type: benchtop
+    location: Sample Prep Room
+    setup_time:
+      min: 5
+      most_likely: 8
+      max: 12
+    sample_run_time:
+      min: 10
+      most_likely: 15
+      max: 25
+    cleanup_time:
+      min: 8
+      most_likely: 12
+      max: 20
+    shutdown_time:
+      min: 2
+      most_likely: 3
+      max: 5
+    automation_level: semi_automated
+    sample_handling_type: individual
+    data_output_type: none
+    requires_supervision: false
+    capacity: 1
+    max_samples_before_maintenance: 100
+    maintenance_duration_hours: 2
+    calibration_frequency_days: null
+    required_operator_skill: micronizer_operation
+    operator_skill_level: basic
+    consumables_per_sample:
+      grinding_media_wear: 0.002
+    mtbf_hours: 150
+    mttr_hours: 1
+  micronizer_2:
+    name: 'Micronizing Mill #2'
+    make: McCrone
+    model: Micronising Mill
+    year: 2019
+    serial_number: MC-2019-002
+    mounting_type: benchtop
+    location: Sample Prep Room
+    setup_time:
+      min: 4
+      most_likely: 7
+      max: 10
+    sample_run_time:
+      min: 8
+      most_likely: 12
+      max: 20
+    cleanup_time:
+      min: 6
+      most_likely: 10
+      max: 15
+    shutdown_time:
+      min: 2
+      most_likely: 3
+      max: 5
+    automation_level: semi_automated
+    sample_handling_type: individual
+    data_output_type: none
+    requires_supervision: false
+    capacity: 1
+    max_samples_before_maintenance: 120
+    maintenance_duration_hours: 2
+    calibration_frequency_days: null
+    required_operator_skill: micronizer_operation
+    operator_skill_level: basic
+    consumables_per_sample:
+      grinding_media_wear: 0.002
+    mtbf_hours: 180
+    mttr_hours: 1
+  XRD1:
+    name: XRD1
+    make: bRUKER
+    model: D2 Phaser
+    year: '2022'
+    serial_number: '1234'
+    mounting_type: Bench
+    location: Lab2
+    automation_level: automated
+    sample_handling_type: multiple
+    data_output_type: diffraction patttern
+    requires_supervision: 'false'
+    capacity: '6'
+    max_samples_before_maintenance: '500'
+    maintenance_duration_hours: '4'
+    calibration_frequency_days: '5'
+    required_operator_skill: expert
+    operator_skill_level: ''
+    mtbf_hours: ''
+    mttr_hours: ''
+instruments:
+  xrf_spectrometer:
+    name: XRF Spectrometer
+    make: Bruker
+    model: S8 Tiger
+    year: 2020
+    serial_number: BR-S8-2020-001
+    mounting_type: benchtop
+    location: Analytical Lab
+    setup_time:
+      min: 5
+      most_likely: 8
+      max: 15
+    sample_run_time:
+      min: 8
+      most_likely: 10
+      max: 15
+    cleanup_time:
+      min: 2
+      most_likely: 3
+      max: 5
+    shutdown_time:
+      min: 3
+      most_likely: 5
+      max: 8
+    automation_level: fully_automated
+    sample_handling_type: batch
+    data_output_type: spectrum
+    requires_supervision: false
+    sample_changer:
+      capacity: 40
+      load_time_per_sample: 0.5
+      unload_time_per_sample: 0.3
+    max_samples_before_maintenance: 500
+    maintenance_duration_hours: 4
+    calibration_frequency_days: 30
+    calibration_duration_hours: 2
+    required_operator_skill: xrf_operation
+    operator_skill_level: intermediate
+    consumables_per_sample:
+      helium_gas: 0.1
+      sample_cups: 1
+    mtbf_hours: 300
+    mttr_hours: 3
+    data_output:
+      elements_detected:
+      - Si
+      - Al
+      - Fe
+      - Mg
+      - Ca
+      - Na
+      - K
+      - Ti
+      - Mn
+      - P
+      precision: 0.01
+      detection_limits:
+        Si: 100
+        Al: 50
+        Fe: 30
+  xrd_diffractometer:
+    name: XRD Diffractometer
+    make: Rigaku
+    model: MiniFlex 600
+    year: 2019
+    serial_number: RG-MF600-2019-001
+    mounting_type: benchtop
+    location: Analytical Lab
+    setup_time:
+      min: 10
+      most_likely: 15
+      max: 25
+    sample_run_time:
+      min: 45
+      most_likely: 60
+      max: 90
+    cleanup_time:
+      min: 5
+      most_likely: 8
+      max: 12
+    shutdown_time:
+      min: 5
+      most_likely: 8
+      max: 15
+    automation_level: fully_automated
+    sample_handling_type: batch
+    data_output_type: spectrum
+    requires_supervision: false
+    sample_changer:
+      capacity: 20
+      load_time_per_sample: 1.0
+      unload_time_per_sample: 0.5
+    max_samples_before_maintenance: 200
+    maintenance_duration_hours: 6
+    calibration_frequency_days: 14
+    calibration_duration_hours: 3
+    required_operator_skill: xrd_operation
+    operator_skill_level: intermediate
+    consumables_per_sample:
+      sample_holders: 1
+      x_ray_tube_wear: 0.0001
+    mtbf_hours: 250
+    mttr_hours: 4
+    data_output:
+      angle_range:
+      - 5
+      - 90
+      step_size: 0.02
+      count_time: 1
+      phases_detected:
+      - quartz
+      - feldspar
+      - mica
+      - calcite
+      - dolomite
+staff:
+  technician_1:
+    name: Technician 1
+    role: technician
+    experience_years: 3
+    full_time_equivalent: 1.0
+    skills:
+      sample_preparation:
+        level: expert
+        certified: true
+      micronizer_operation:
+        level: expert
+        certified: true
+      xrf_operation:
+        level: basic
+        certified: false
+      xrd_operation:
+        level: none
+        certified: false
+      data_analysis:
+        level: basic
+        certified: false
+    vacation_days_per_year: 15
+    sick_days_per_year: 5
+    training_days_per_year: 10
+    efficiency_factor: 1.0
+    error_rate: 0.02
+  technician_2:
+    name: Technician 2
+    role: technician
+    experience_years: 5
+    full_time_equivalent: 1.0
+    skills:
+      sample_preparation:
+        level: expert
+        certified: true
+      micronizer_operation:
+        level: expert
+        certified: true
+      xrf_operation:
+        level: intermediate
+        certified: true
+      xrd_operation:
+        level: basic
+        certified: true
+      data_analysis:
+        level: basic
+        certified: false
+    vacation_days_per_year: 20
+    sick_days_per_year: 3
+    training_days_per_year: 8
+    efficiency_factor: 1.1
+    error_rate: 0.015
+  junior_scientist:
+    name: Junior Scientist
+    role: junior_scientist
+    experience_years: 2
+    full_time_equivalent: 1.0
+    skills:
+      sample_preparation:
+        level: intermediate
+        certified: true
+      micronizer_operation:
+        level: basic
+        certified: false
+      xrf_operation:
+        level: expert
+        certified: true
+      xrd_operation:
+        level: expert
+        certified: true
+      data_analysis:
+        level: intermediate
+        certified: true
+      report_writing:
+        level: intermediate
+        certified: true
+    vacation_days_per_year: 20
+    sick_days_per_year: 5
+    training_days_per_year: 15
+    efficiency_factor: 0.9
+    error_rate: 0.01
+  senior_scientist:
+    name: Senior Scientist
+    role: senior_scientist
+    experience_years: 8
+    full_time_equivalent: 1.0
+    skills:
+      sample_preparation:
+        level: expert
+        certified: true
+      micronizer_operation:
+        level: expert
+        certified: true
+      xrf_operation:
+        level: expert
+        certified: true
+      xrd_operation:
+        level: expert
+        certified: true
+      data_analysis:
+        level: expert
+        certified: true
+      report_writing:
+        level: expert
+        certified: true
+      quality_review:
+        level: expert
+        certified: true
+    vacation_days_per_year: 25
+    sick_days_per_year: 3
+    training_days_per_year: 20
+    efficiency_factor: 1.2
+    error_rate: 0.005
+external_labs:
+  thin_section_lab:
+    name: Thin Section Preparation Services
+    type: external
+    location: External Vendor
+    services_offered:
+    - thin_section_preparation
+    turnaround_time:
+      min: 5
+      most_likely: 7
+      max: 14
+    batch_size:
+      min: 1
+      max: 50
+      optimal: 20
+    capacity_per_month: 200
+    quality_level: high
+    on_time_delivery_rate: 0.85
+    quality_acceptance_rate: 0.95
+    cost_per_sample: 75.0
+    status_update_frequency: 2
+    accepts_rush_orders: true
+    rush_order_multiplier: 1.5
+  ct_scanning_lab:
+    name: CT Scanning Services
+    type: external
+    location: University Partnership
+    services_offered:
+    - ct_scanning
+    - 3d_reconstruction
+    turnaround_time:
+      min: 3
+      most_likely: 5
+      max: 10
+    batch_size:
+      min: 1
+      max: 20
+      optimal: 10
+    capacity_per_month: 150
+    quality_level: high
+    on_time_delivery_rate: 0.9
+    quality_acceptance_rate: 0.98
+    cost_per_sample: 150.0
+    status_update_frequency: 1
+    accepts_rush_orders: false
+    rush_order_multiplier: null
+project:
+  name: 100 Rock Sample Analysis Project
+  sample_count: 100
+  priority: normal
+  deadline_days: 45
+  sample_properties:
+    sample_type: rock_core
+    average_size: 5cm diameter x 10cm length
+    hardness: medium
+    expected_minerals:
+    - quartz
+    - feldspar
+    - mica
+  quality_standards:
+    xrf_precision: 0.01
+    xrd_detection_limit: 1
+    data_review_required: true
+    duplicate_analysis_rate: 0.1
+  deliverables:
+  - XRF elemental analysis
+  - XRD mineral identification
+  - CT scan 3D models
+  - Thin section images
+  - Integrated geological report
+  client: Mining Company ABC
+  project_manager: Senior Scientist
+  primary_contact: john.doe@miningcompany.com
+workflow_steps:
+  sample_receipt:
+    name: Sample Receipt and Logging
+    category: sample_management
+    duration:
+      min: 2
+      most_likely: 3
+      max: 5
+    unit: minutes
+    required_skills:
+    - sample_management
+    skill_level: basic
+    inputs:
+    - raw_sample
+    outputs:
+    - logged_sample
+    can_batch: true
+    max_batch_size: 20
+  rock_cutting:
+    name: Cut Rock Sample
+    category: sample_preparation
+    duration:
+      min: 15
+      most_likely: 20
+      max: 30
+    unit: minutes
+    equipment_required:
+    - rock_saw
+    required_skills:
+    - sample_preparation
+    skill_level: basic
+    supplies:
+      cutting_fluid: 0.1
+    inputs:
+    - logged_sample
+    outputs:
+    - plug_sample
+    - end_piece_1
+    - end_piece_2
+    can_batch: true
+    max_batch_size: 10
+  micronization:
+    name: Micronize Sample
+    category: sample_preparation
+    duration:
+      min: 10
+      most_likely: 15
+      max: 25
+    unit: minutes
+    equipment_required:
+    - micronizer_1
+    - micronizer_2
+    required_skills:
+    - micronizer_operation
+    skill_level: basic
+    inputs:
+    - end_piece_2
+    outputs:
+    - powder_sample
+    can_batch: false
+    requires_cleanup: true
+  xrf_analysis:
+    name: XRF Elemental Analysis
+    category: analysis
+    duration:
+      min: 8
+      most_likely: 10
+      max: 15
+    unit: minutes
+    equipment_required:
+    - xrf_spectrometer
+    required_skills:
+    - xrf_operation
+    skill_level: intermediate
+    inputs:
+    - powder_sample
+    outputs:
+    - xrf_data
+    can_batch: true
+    max_batch_size: 40
+  xrd_analysis:
+    name: XRD Mineral Analysis
+    category: analysis
+    duration:
+      min: 45
+      most_likely: 60
+      max: 90
+    unit: minutes
+    equipment_required:
+    - xrd_diffractometer
+    required_skills:
+    - xrd_operation
+    skill_level: intermediate
+    inputs:
+    - powder_sample
+    outputs:
+    - xrd_data
+    can_batch: true
+    max_batch_size: 20
+  thin_section_prep:
+    name: Thin Section Preparation
+    category: external_service
+    duration:
+      min: 5
+      most_likely: 7
+      max: 14
+    unit: days
+    external_lab: thin_section_lab
+    inputs:
+    - end_piece_1
+    outputs:
+    - thin_section
+    can_batch: true
+    max_batch_size: 20
+  ct_scanning:
+    name: CT Scanning
+    category: external_service
+    duration:
+      min: 3
+      most_likely: 5
+      max: 10
+    unit: days
+    external_lab: ct_scanning_lab
+    inputs:
+    - plug_sample
+    outputs:
+    - ct_data
+    can_batch: true
+    max_batch_size: 10
+  data_processing:
+    name: Integrated Data Analysis
+    category: data_analysis
+    duration:
+      min: 30
+      most_likely: 45
+      max: 75
+    unit: minutes
+    required_skills:
+    - data_analysis
+    skill_level: intermediate
+    inputs:
+    - xrf_data
+    - xrd_data
+    outputs:
+    - processed_data
+    dependencies:
+    - xrf_analysis
+    - xrd_analysis
+    can_batch: true
+    max_batch_size: 10
+  quality_review:
+    name: Data Quality Review
+    category: quality_control
+    duration:
+      min: 15
+      most_likely: 20
+      max: 30
+    unit: minutes
+    required_skills:
+    - quality_review
+    skill_level: expert
+    inputs:
+    - processed_data
+    outputs:
+    - reviewed_data
+    can_batch: true
+    max_batch_size: 20
+  report_generation:
+    name: Final Report Generation
+    category: reporting
+    duration:
+      min: 60
+      most_likely: 90
+      max: 120
+    unit: minutes
+    required_skills:
+    - report_writing
+    skill_level: intermediate
+    inputs:
+    - reviewed_data
+    - ct_data
+    - thin_section
+    outputs:
+    - final_report
+    dependencies:
+    - quality_review
+    - ct_scanning
+    - thin_section_prep
+    can_batch: true
+    max_batch_size: 100
+workflow_dependencies:
+- from_step: sample_receipt
+  to_step: rock_cutting
+  dependency_type: sequential
+- from_step: rock_cutting
+  to_step: micronization
+  dependency_type: sequential
+  artifact_mapping:
+    end_piece_2: end_piece_2
+- from_step: rock_cutting
+  to_step: thin_section_prep
+  dependency_type: sequential
+  artifact_mapping:
+    end_piece_1: end_piece_1
+- from_step: rock_cutting
+  to_step: ct_scanning
+  dependency_type: sequential
+  artifact_mapping:
+    plug_sample: plug_sample
+- from_step: micronization
+  to_step: xrf_analysis
+  dependency_type: sequential
+- from_step: micronization
+  to_step: xrd_analysis
+  dependency_type: sequential
+- from_step: xrf_analysis
+  to_step: data_processing
+  dependency_type: data_dependency
+- from_step: xrd_analysis
+  to_step: data_processing
+  dependency_type: data_dependency
+- from_step: data_processing
+  to_step: quality_review
+  dependency_type: sequential
+- from_step: quality_review
+  to_step: report_generation
+  dependency_type: data_dependency
+- from_step: ct_scanning
+  to_step: report_generation
+  dependency_type: data_dependency
+- from_step: thin_section_prep
+  to_step: report_generation
+  dependency_type: data_dependency

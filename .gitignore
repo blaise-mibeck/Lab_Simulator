@@ -1,0 +1,56 @@
+# Python virtual environments
+.venv/
+venv/
+ENV/
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter and notebook checkpoints
+.ipynb_checkpoints/
+
+# VSCode settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test outputs and logs
+*.log
+*.tmp
+*.bak
+
+# Simulation and metrics outputs
+metrics.json
+
+# pytest cache
+.pytest_cache/
+
+# Environment and dependency files
+.env
+.env.*
+
+# User/editor backup files
+*~
+*.swp
+*.swo
+
+# Ignore data exports
+*.csv
+*.xlsx
+*.h5
+
+# Ignore generated images
+*.png
+*.jpg
+*.jpeg
+*.svg
+
+# Ignore any local config overrides
+config.local.*
+
+# Ignore any files you don't want in version control
