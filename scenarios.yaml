@@ -1,0 +1,15 @@
+# Scenario config for batch simulation runs
+scenarios:
+  - name: "1 tech, 1 sci"
+    staff: {tech: 1, sci: 1}
+  - name: "2 tech, 1 sci"
+    staff: {tech: 2, sci: 1}
+  - name: "3 tech, 1 sci"
+    staff: {tech: 3, sci: 1}
+  - name: "2 tech, 2 sci"
+    staff: {tech: 2, sci: 2}
+  - name: "3 tech, 2 sci"
+    staff: {tech: 3, sci: 2}  
+  - name: "3 tech, 3 sci"
+    staff: {tech: 3, sci: 3} 
+# Add more scenarios as needed

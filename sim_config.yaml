@@ -1,0 +1,14 @@
+# Simulation configuration file
+samples: 100
+start_date: '2025-06-30 09:00'
+staff:
+  tech: 3
+  sci: 3
+batching:
+  enabled: true
+  steps:
+    # step_name: batch_size (if omitted, default is 1)
+    XRF Scan: 40
+    XRD Scan: 6
+  default_batch_size: 1
+  batch_policy: 'all'  # 'all' = wait for all samples, 'min' = wait for min batch size
