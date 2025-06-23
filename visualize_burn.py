@@ -14,11 +14,13 @@ def plot_sample_burn(sample_events, calendar, holidays=None):
             all_dates.add(e['planned_start'].date())
             all_dates.add(e['planned_end'].date())
     all_dates = sorted(all_dates)
+    # Use days from start as x-axis
+    day_numbers = [(d - all_dates[0]).days for d in all_dates]
     # Color weekends/holidays and annotate day numbers
     for i, d in enumerate(all_dates):
         if d.weekday() >= 5 or d in holidays or not calendar.is_workday(d):
-            ax.axvspan(d, d + datetime.timedelta(days=1), color='#f8d7da', alpha=0.4)
-        ax.text(d, ax.get_ylim()[1], str(i+1), ha='center', va='bottom', fontsize=8, color='gray', rotation=90)
+            ax.axvspan(day_numbers[i] - 0.5, day_numbers[i] + 0.5, color='#f8d7da', alpha=0.4)
+        ax.text(day_numbers[i], ax.get_ylim()[1], str(day_numbers[i]), ha='center', va='bottom', fontsize=8, color='gray', rotation=90)
     # Plot per-step activity
     step_counts = defaultdict(lambda: [0]*len(all_dates))
     date_idx = {d: i for i, d in enumerate(all_dates)}
@@ -38,9 +40,10 @@ def plot_sample_burn(sample_events, calendar, holidays=None):
             running += c
             step_cum[step][i] = running
     for step, cum_counts in step_cum.items():
-        ax.plot(all_dates, cum_counts, label=step)
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%a %m-%d'))
-    ax.set_xlabel('Day')
+        ax.plot(day_numbers, cum_counts, label=step)
+    ax.set_xticks(day_numbers)
+    ax.set_xticklabels([f"{d.strftime('%a %m-%d')}" for d in all_dates], rotation=45, ha='right')
+    ax.set_xlabel('Days from Start')
     ax.set_ylabel('Cumulative Samples Completed')
     ax.set_title('Per-Sample Burn Plot')
     ax.legend()
@@ -56,11 +59,12 @@ def plot_project_burn(sample_events, calendar, holidays=None):
             all_dates.add(e['planned_start'].date())
             all_dates.add(e['planned_end'].date())
     all_dates = sorted(all_dates)
-    # Color weekends/holidays and annotate day numbers
+    # Use days from start as x-axis
+    day_numbers = [(d - all_dates[0]).days for d in all_dates]
     for i, d in enumerate(all_dates):
         if d.weekday() >= 5 or d in holidays or not calendar.is_workday(d):
-            ax.axvspan(d, d + datetime.timedelta(days=1), color='#f8d7da', alpha=0.4)
-        ax.text(d, ax.get_ylim()[1], str(i+1), ha='center', va='bottom', fontsize=8, color='gray', rotation=90)
+            ax.axvspan(day_numbers[i] - 0.5, day_numbers[i] + 0.5, color='#f8d7da', alpha=0.4)
+        ax.text(day_numbers[i], ax.get_ylim()[1], str(day_numbers[i]), ha='center', va='bottom', fontsize=8, color='gray', rotation=90)
     # Cumulative percent complete (burn-up)
     total_steps = sum(len(events) for events in sample_events.values())
     completed = [0]*len(all_dates)
@@ -74,9 +78,10 @@ def plot_project_burn(sample_events, calendar, holidays=None):
     for i in range(1, len(completed)):
         completed[i] += completed[i-1]
     percent = [c/total_steps*100 for c in completed]
-    ax.plot(all_dates, percent, label='Project % Complete', color='navy')
-    ax.xaxis.set_major_formatter(mdates.DateFormatter('%a %m-%d'))
-    ax.set_xlabel('Day')
+    ax.plot(day_numbers, percent, label='Project % Complete', color='navy')
+    ax.set_xticks(day_numbers)
+    ax.set_xticklabels([f"{d.strftime('%a %m-%d')}" for d in all_dates], rotation=45, ha='right')
+    ax.set_xlabel('Days from Start')
     ax.set_ylabel('Percent Complete')
     ax.set_title('Project Burn Chart')
     plt.tight_layout()

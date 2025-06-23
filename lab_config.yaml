@@ -1,0 +1,25 @@
+# Example lab equipment configuration
+# Add or modify equipment/tools/instruments as needed for scenario studies
+
+equipment:
+  - name: Jaw Crusher
+    type: crusher
+    quantity: 1
+    throughput_per_hour: 10
+  - name: Micronizing Mill
+    type: mill
+    quantity: 1
+    throughput_per_hour: 8
+  - name: XRF1
+    type: instrument
+    quantity: 1
+    throughput_per_hour: 40
+  - name: Thin Section Machine
+    type: sectioning
+    quantity: 1
+    throughput_per_hour: 2
+  - name: Rock Saw
+    type: saw
+    quantity: 1
+    throughput_per_hour: 5
+# Add more equipment as needed
